@@ -17,7 +17,7 @@
 package ru.mail.polis;
 
 import org.jetbrains.annotations.NotNull;
-import ru.mail.polis.KateMoreva.MyDAO;
+import ru.mail.polis.kate.moreva.MyDAO;
 
 import java.io.File;
 import java.io.IOException;

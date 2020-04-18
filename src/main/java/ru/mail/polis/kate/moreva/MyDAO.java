@@ -1,4 +1,4 @@
-package ru.mail.polis.KateMoreva;
+package ru.mail.polis.kate.moreva;
 
 import org.jetbrains.annotations.NotNull;
 import ru.mail.polis.DAO;
@@ -9,12 +9,13 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
 public class MyDAO implements DAO {
     private final SortedMap<ByteBuffer, ByteBuffer> map = new ConcurrentSkipListMap<>();
 
     @NotNull
     @Override
-    public Iterator<Record> iterator(@NotNull final ByteBuffer from){
+    public Iterator<Record> iterator(@NotNull final ByteBuffer from) {
         return map.tailMap(from)
                 .entrySet()
                 .stream()
@@ -23,17 +24,17 @@ public class MyDAO implements DAO {
     }
 
     @Override
-    public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value){
+    public void upsert(@NotNull final ByteBuffer key, @NotNull final ByteBuffer value) {
         map.put(key, value);
     }
 
     @Override
-    public void remove(@NotNull final ByteBuffer key){
+    public void remove(@NotNull final ByteBuffer key) {
         map.remove(key);
     }
 
     @Override
-    public void close(){
+    public void close() {
         map.clear();
     }
 }
