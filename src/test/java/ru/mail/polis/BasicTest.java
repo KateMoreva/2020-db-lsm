@@ -199,4 +199,12 @@ class BasicTest extends TestBase {
             assertThrows(NoSuchElementException.class, () -> dao.get(key));
         }
     }
+
+    @Test
+    void removeAbsent(@TempDir File data) throws IOException {
+        final ByteBuffer key = randomKey();
+        try (DAO dao = DAOFactory.create(data)) {
+            dao.remove(key);
+        }
+    }
 }

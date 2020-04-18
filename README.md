@@ -1,7 +1,7 @@
 # 2020-db-lsm
 Курсовой проект 2020 года [курса](https://polis.mail.ru/curriculum/program/discipline/970/) "Использование баз данных" в [Технополис](https://polis.mail.ru).
 
-## Этап 1. In-memory (deadline 2020-04-22)
+## Этап 1. In-memory (deadline 2020-04-21)
 ### Fork
 [Форкните проект](https://help.github.com/articles/fork-a-repo/), склонируйте и добавьте `upstream`:
 ```
