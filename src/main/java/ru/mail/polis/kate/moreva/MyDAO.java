@@ -6,7 +6,6 @@ import ru.mail.polis.Record;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
