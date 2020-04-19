@@ -19,7 +19,7 @@ public class MyDAO implements DAO {
         return map.tailMap(from)
                 .entrySet()
                 .stream()
-                .map(element -> Record.of(Objects.requireNonNull(element).getKey(), element.getValue()))
+                .map(element -> Record.of(element.getKey(), element.getValue()))
                 .iterator();
     }
 
