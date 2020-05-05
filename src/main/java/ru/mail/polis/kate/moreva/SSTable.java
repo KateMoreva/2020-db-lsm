@@ -17,19 +17,24 @@ import java.util.concurrent.atomic.AtomicReference;
 
 final class SSTable implements Table {
 
-    private final int byteSize;
-    private final int count;
-    private final FileChannel fileChannel;
+    private int byteSize;
+    private int count;
+    private FileChannel fileChannel;
+
     private static final ByteBuffer intBuffer = ByteBuffer.allocate(Integer.BYTES);
     private static final ByteBuffer longBuffer = ByteBuffer.allocate(Long.BYTES);
 
-    SSTable(@NotNull final Path path) throws IOException {
-        this.fileChannel = FileChannel.open(path, StandardOpenOption.READ);
-        final int fileSize = (int) (fileChannel.size() - Integer.BYTES);
-        final ByteBuffer cellByteBuffer = intBuffer.rewind();
-        this.fileChannel.read(cellByteBuffer, fileSize);
-        this.count = cellByteBuffer.rewind().getInt();
-        this.byteSize = fileSize - count * Integer.BYTES;
+    SSTable(@NotNull final Path path) {
+        try {
+            this.fileChannel = FileChannel.open(path, StandardOpenOption.READ);
+            final int fileSize = (int) (fileChannel.size() - Integer.BYTES);
+            final ByteBuffer cellByteBuffer = intBuffer.rewind();
+            this.fileChannel.read(cellByteBuffer, fileSize);
+            this.count = cellByteBuffer.rewind().getInt();
+            this.byteSize = fileSize - count * Integer.BYTES;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     static void serialize(@NotNull final File toFile,

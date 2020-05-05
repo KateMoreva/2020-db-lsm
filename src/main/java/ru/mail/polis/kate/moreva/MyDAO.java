@@ -13,15 +13,18 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.NavigableMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Comparator;
-import java.util.ArrayList;
+import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Stream;
 
+/**
+ * Dao implementation
+ */
 public class MyDAO implements DAO {
     private static final String SUFFIX = ".dat";
     private static final String TMP = ".tmp";
@@ -56,15 +59,11 @@ public class MyDAO implements DAO {
                                 && !path.toFile().isDirectory();
                     })
                     .forEach(path -> {
-                        try {
-                            final String fileName = path.getFileName().toString();
-                            final int generationCounter = Integer.parseInt(
-                                    fileName.substring(0, fileName.indexOf(SUFFIX)));
-                            generation = Math.max(generation, generationCounter);
-                            ssTables.put(generationCounter, new SSTable(path));
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
+                        final String fileName = path.getFileName().toString();
+                        final int generationCounter = Integer.parseInt(
+                                fileName.substring(0, fileName.indexOf(SUFFIX)));
+                        generation = Math.max(generation, generationCounter);
+                        ssTables.put(generationCounter, new SSTable(path));
                     });
         } catch (IOException e) {
             throw new UncheckedIOException(e);
