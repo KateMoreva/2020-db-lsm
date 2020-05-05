@@ -13,7 +13,12 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.NavigableMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Stream;
 
@@ -53,7 +58,8 @@ public class MyDAO implements DAO {
                     .forEach(path -> {
                         try {
                             final String fileName = path.getFileName().toString();
-                            final int generationCounter = Integer.parseInt(fileName.substring(0, fileName.indexOf(SUFFIX)));
+                            final int generationCounter = Integer.parseInt(
+                                    fileName.substring(0, fileName.indexOf(SUFFIX)));
                             generation = Math.max(generation, generationCounter);
                             ssTables.put(generationCounter, new SSTable(path));
                         } catch (IOException e) {

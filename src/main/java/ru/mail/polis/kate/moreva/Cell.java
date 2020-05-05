@@ -1,6 +1,5 @@
 package ru.mail.polis.kate.moreva;
 
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

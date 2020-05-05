@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 final class SSTable implements Table {
 
-    private final int size;
+    private final int byteSize;
     private final int count;
     private final FileChannel fileChannel;
     private static final ByteBuffer intBuffer = ByteBuffer.allocate(Integer.BYTES);
@@ -29,7 +29,7 @@ final class SSTable implements Table {
         final ByteBuffer cellByteBuffer = intBuffer.rewind();
         this.fileChannel.read(cellByteBuffer, fileSize);
         this.count = cellByteBuffer.rewind().getInt();
-        this.size = fileSize - count * Integer.BYTES;
+        this.byteSize = fileSize - count * Integer.BYTES;
     }
 
     static void serialize(@NotNull final File toFile,
@@ -111,7 +111,7 @@ final class SSTable implements Table {
 
     @Override
     public long sizeInBytes() {
-        return (long) size + (count + 1) * Integer.BYTES;
+        return (long) byteSize + (count + 1) * Integer.BYTES;
     }
 
     private Cell getCell(final int rowPosition) {
@@ -136,7 +136,7 @@ final class SSTable implements Table {
                 offset += Long.BYTES;
                 final int dataSize;
                 if (rowPosition == count - 1) {
-                    dataSize = size - offset;
+                    dataSize = byteSize - offset;
                 } else {
                     dataSize = getOffset(rowPosition + 1) - offset;
                 }
@@ -183,7 +183,7 @@ final class SSTable implements Table {
 
     private int getOffset(final int rowPosition) throws IOException {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
-        fileChannel.read(byteBuffer, size + rowPosition * Integer.BYTES);
+        fileChannel.read(byteBuffer, byteSize + rowPosition * Integer.BYTES);
         return byteBuffer.rewind().getInt();
     }
 
