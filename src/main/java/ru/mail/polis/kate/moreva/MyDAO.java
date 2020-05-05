@@ -45,6 +45,12 @@ public class MyDAO implements DAO {
     private final long flushThreshold;
     private int generation;
 
+    /**
+     * Creates DAO from file storage.
+     *
+     * @param storage        - file
+     * @param flushThreshold - table size
+     */
     public MyDAO(final File storage, final long flushThreshold) {
         assert flushThreshold > 0L;
         this.storage = storage;
