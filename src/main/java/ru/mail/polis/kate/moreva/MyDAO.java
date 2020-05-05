@@ -26,7 +26,7 @@ public class MyDAO implements DAO {
     private final File storage;
 
     @NotNull
-    private MemTable memTable;
+    private final MemTable memTable;
 
     @NotNull
     private final NavigableMap<Integer, Table> ssTables;

@@ -31,7 +31,7 @@ public class MemTable implements Table {
         changeSize(removedValue, key);
     }
 
-    private void changeSize(Value removedValue, @NotNull final ByteBuffer key) {
+    private void changeSize(final Value removedValue, @NotNull final ByteBuffer key) {
         if (removedValue == null) {
             size += key.remaining() + Long.BYTES;
         } else if (!removedValue.isTombstone()) {

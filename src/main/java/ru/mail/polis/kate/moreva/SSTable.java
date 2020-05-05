@@ -114,7 +114,6 @@ final class SSTable implements Table {
         return (long) size + (count + 1) * Integer.BYTES;
     }
 
-
     private Cell getCell(final int rowPosition) {
         try {
             int offset = getOffset(rowPosition);
