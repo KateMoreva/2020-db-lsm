@@ -23,9 +23,12 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.stream.Stream;
 
 /**
- * Dao implementation
+ * Dao implementation.
+ *
+ * @author kate
  */
 public class MyDAO implements DAO {
+
     private static final String SUFFIX = ".dat";
     private static final String TMP = ".tmp";
     private static final String LETTERS = "[a-zA-Z]+";

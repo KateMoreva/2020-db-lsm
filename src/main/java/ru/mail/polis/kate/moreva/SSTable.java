@@ -1,6 +1,8 @@
 package ru.mail.polis.kate.moreva;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 final class SSTable implements Table {
+
+    private static final Logger log = LoggerFactory.getLogger(SSTable.class);
 
     private int byteSize;
     private int count;
@@ -33,7 +37,7 @@ final class SSTable implements Table {
             this.count = cellByteBuffer.rewind().getInt();
             this.byteSize = fileSize - count * Integer.BYTES;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 
