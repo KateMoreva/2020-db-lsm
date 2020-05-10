@@ -35,6 +35,8 @@ class TrashTest extends TestBase {
         createTrashFile(data, "trash");
         createTrashFile(data, "trash_0");
         createTrashFile(data, "trash.db");
+        createTrashFile(data, "123trash.dat");
+        createTrashFile(data, "trash123.dat");
 
         // Load and check stored value
         try (DAO dao = DAOFactory.create(data)) {
