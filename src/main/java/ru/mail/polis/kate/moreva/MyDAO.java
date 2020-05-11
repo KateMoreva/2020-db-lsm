@@ -2,6 +2,8 @@ package ru.mail.polis.kate.moreva;
 
 import com.google.common.collect.Iterators;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.mail.polis.DAO;
 import ru.mail.polis.Iters;
 import ru.mail.polis.Record;
@@ -32,6 +34,8 @@ public class MyDAO implements DAO {
     private static final String SUFFIX = ".dat";
     private static final String TMP = ".tmp";
     private static final String LETTERS = "[a-zA-Z]+";
+
+    private static final Logger log = LoggerFactory.getLogger(SSTable.class);
 
     @NotNull
     private final File storage;
@@ -68,11 +72,15 @@ public class MyDAO implements DAO {
                                 && !path.toFile().isDirectory();
                     })
                     .forEach(path -> {
-                        final String fileName = path.getFileName().toString();
-                        final int generationCounter = Integer.parseInt(
-                                fileName.substring(0, fileName.indexOf(SUFFIX)));
-                        generation = Math.max(generation, generationCounter);
-                        ssTables.put(generationCounter, new SSTable(path));
+                        try {
+                            final String fileName = path.getFileName().toString();
+                            final int generationCounter = Integer.parseInt(
+                                    fileName.substring(0, fileName.indexOf(SUFFIX)));
+                            generation = Math.max(generation, generationCounter);
+                            ssTables.put(generationCounter, new SSTable(path));
+                        } catch (NumberFormatException e) {
+                            log.error("Wrong name", e);
+                        }
                     });
         } catch (IOException e) {
             throw new UncheckedIOException(e);

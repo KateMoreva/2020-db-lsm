@@ -15,7 +15,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 final class SSTable implements Table {
 
@@ -25,19 +24,21 @@ final class SSTable implements Table {
     private int count;
     private FileChannel fileChannel;
 
-    private static final ByteBuffer intBuffer = ByteBuffer.allocate(Integer.BYTES);
-    private static final ByteBuffer longBuffer = ByteBuffer.allocate(Long.BYTES);
+    private static final ByteBuffer allocateIntBuffer = ByteBuffer.allocate(Integer.BYTES);
+    private static final ByteBuffer allocateLongBuffer = ByteBuffer.allocate(Long.BYTES);
 
     SSTable(@NotNull final Path path) {
         try {
             this.fileChannel = FileChannel.open(path, StandardOpenOption.READ);
             final int fileSize = (int) (fileChannel.size() - Integer.BYTES);
-            final ByteBuffer cellByteBuffer = intBuffer.rewind();
+            final ByteBuffer cellByteBuffer = allocateIntBuffer.rewind();
             this.fileChannel.read(cellByteBuffer, fileSize);
             this.count = cellByteBuffer.rewind().getInt();
             this.byteSize = fileSize - count * Integer.BYTES;
         } catch (IOException e) {
             log.error(e.getMessage());
+            throw new UncheckedIOException(e);
+
         }
     }
 
@@ -51,15 +52,15 @@ final class SSTable implements Table {
                 final ByteBuffer key = cell.getKey();
                 offsets.add(offset);
                 offset += key.remaining() + Long.BYTES + Integer.BYTES;
-                file.write(intBuffer.rewind().putInt(key.remaining()).rewind());
+                file.write(allocateIntBuffer.rewind().putInt(key.remaining()).rewind());
 
                 file.write(key);
                 if (cell.getValue().isTombstone()) {
-                    file.write(longBuffer.rewind()
+                    file.write(allocateLongBuffer.rewind()
                             .putLong(-cell.getValue().getTimestamp())
                             .rewind());
                 } else {
-                    file.write(longBuffer.rewind()
+                    file.write(allocateLongBuffer.rewind()
                             .putLong(cell.getValue().getTimestamp())
                             .rewind());
 
@@ -68,23 +69,18 @@ final class SSTable implements Table {
                     file.write(data);
                 }
             }
-            final AtomicReference<IOException> ioe = new AtomicReference<>();
             offsets.forEach(offsetValue -> {
                 try {
-                    file.write(intBuffer.rewind()
+                    file.write(allocateIntBuffer.rewind()
                             .putInt(offsetValue)
                             .rewind());
                 } catch (IOException e) {
-                    ioe.set(e);
+                    throw new UncheckedIOException(e);
                 }
             });
-            final IOException ioException = ioe.get();
-            if (ioException != null) {
-                throw ioException;
-            }
 
             final int count = offsets.size();
-            file.write(intBuffer.rewind().putInt(count).rewind());
+            file.write(allocateIntBuffer.rewind().putInt(count).rewind());
         }
     }
 
@@ -126,7 +122,7 @@ final class SSTable implements Table {
     private Cell getCell(final int rowPosition) {
         try {
             int offset = getOffset(rowPosition);
-            final ByteBuffer keyByteBufferSize = intBuffer.rewind();
+            final ByteBuffer keyByteBufferSize = allocateIntBuffer.rewind();
             fileChannel.read(keyByteBufferSize, offset);
             offset += Integer.BYTES;
 
@@ -135,7 +131,7 @@ final class SSTable implements Table {
             fileChannel.read(keyByteBuffer, offset);
             offset += keySize;
 
-            final ByteBuffer timestampBuffer = longBuffer.rewind();
+            final ByteBuffer timestampBuffer = allocateLongBuffer.rewind();
             fileChannel.read(timestampBuffer, offset);
             final long timestamp = timestampBuffer.rewind().getLong();
 
@@ -180,7 +176,7 @@ final class SSTable implements Table {
     }
 
     private ByteBuffer getKey(final int rowPosition) throws IOException {
-        final ByteBuffer byteBuffer = intBuffer.rewind();
+        final ByteBuffer byteBuffer = allocateIntBuffer.rewind();
         final int offset = getOffset(rowPosition);
 
         fileChannel.read(byteBuffer, offset);
