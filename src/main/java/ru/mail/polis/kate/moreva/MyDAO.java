@@ -71,21 +71,23 @@ public class MyDAO implements DAO {
                                 && !name.substring(0, name.indexOf(SUFFIX)).matches(LETTERS)
                                 && !path.toFile().isDirectory();
                     })
-                    .forEach(path -> {
-                        try {
-                            final String fileName = path.getFileName().toString();
-                            final int generationCounter = Integer.parseInt(
-                                    fileName.substring(0, fileName.indexOf(SUFFIX)));
-                            generation = Math.max(generation, generationCounter);
-                            ssTables.put(generationCounter, new SSTable(path));
-                        } catch (NumberFormatException e) {
-                            log.error("Wrong name", e);
-                        }
-                    });
+                    .forEach(this::storeData);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
         generation++;
+    }
+
+    private void storeData(@NotNull final Path path) {
+        try {
+            final String fileName = path.getFileName().toString();
+            final int generationCounter = Integer.parseInt(
+                    fileName.substring(0, fileName.indexOf(SUFFIX)));
+            generation = Math.max(generation, generationCounter);
+            ssTables.put(generationCounter, new SSTable(path));
+        } catch (NumberFormatException e) {
+            log.error("Wrong name", e);
+        }
     }
 
     @NotNull
