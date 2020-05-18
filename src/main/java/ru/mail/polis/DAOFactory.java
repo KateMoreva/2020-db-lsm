@@ -30,7 +30,7 @@ import java.io.IOException;
 public final class DAOFactory {
     static final long MAX_HEAP = 128 * 1024 * 1024;
 
-    private DAOFactory(){
+    private DAOFactory() {
         // Not instantiatable
     }
 

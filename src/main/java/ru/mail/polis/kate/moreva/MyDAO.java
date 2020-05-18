@@ -175,7 +175,7 @@ public class MyDAO implements DAO {
     }
 
     @Override
-    public void compact() throws IOException{
+    public void compact() throws IOException {
         final Iterator<Cell> iterator = cellIterator(ByteBuffer.allocate(0));
         final File tmpFile = new File(storage, generation + TMP);
         SSTable.serialize(tmpFile, iterator);
