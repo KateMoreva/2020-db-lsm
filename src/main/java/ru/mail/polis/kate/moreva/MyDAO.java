@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -42,10 +41,10 @@ public class MyDAO implements DAO {
     private final File storage;
 
     @NotNull
-    private MemTable memTable;
+    private final MemTable memTable;
 
     @NotNull
-    private NavigableMap<Integer, Table> ssTables;
+    private final NavigableMap<Integer, Table> ssTables;
 
     private final long flushThreshold;
     private int generation;
@@ -102,6 +101,7 @@ public class MyDAO implements DAO {
         generation++;
         memTable.close();
     }
+
     private Iterator<Cell> cellIterator(@NotNull final ByteBuffer from) {
         final List<Iterator<Cell>> iterators = new ArrayList<>(ssTables.size() + 1);
         iterators.add(memTable.iterator(from));
