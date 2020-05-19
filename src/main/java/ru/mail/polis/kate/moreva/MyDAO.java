@@ -41,7 +41,7 @@ public class MyDAO implements DAO {
     private final File storage;
 
     @NotNull
-    private final MemTable memTable;
+    private MemTable memTable;
 
     @NotNull
     private final NavigableMap<Integer, Table> ssTables;
@@ -182,8 +182,10 @@ public class MyDAO implements DAO {
         for (int i = 0; i < generation; i++) {
             Files.delete(new File(storage, i + SUFFIX).toPath());
         }
+        generation = 0;
         final File datFile = new File(storage, generation + SUFFIX);
         Files.move(tmpFile.toPath(), datFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+        memTable = new MemTable();
         ssTables.put(generation, new SSTable(datFile.toPath()));
         generation++;
     }
