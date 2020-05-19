@@ -34,6 +34,7 @@ public class MyDAO implements DAO {
     private static final String SUFFIX = ".dat";
     private static final String TMP = ".tmp";
     private static final String LETTERS = "[a-zA-Z]+";
+    private static final int MAX_FILE_NUMBER = 100;
 
     private static final Logger log = LoggerFactory.getLogger(SSTable.class);
 
@@ -150,6 +151,9 @@ public class MyDAO implements DAO {
         if (memTable.sizeInBytes() >= flushThreshold) {
             flush();
         }
+        if (ssTables.size() >= MAX_FILE_NUMBER) {
+            compact();
+        }
     }
 
     @Override
@@ -157,6 +161,9 @@ public class MyDAO implements DAO {
         memTable.remove(key);
         if (memTable.sizeInBytes() >= flushThreshold) {
             flush();
+        }
+        if (ssTables.size() >= MAX_FILE_NUMBER) {
+            compact();
         }
     }
 
