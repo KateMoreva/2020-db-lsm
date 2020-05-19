@@ -81,6 +81,48 @@ class CompactionTest extends TestBase {
     }
 
     @Test
+    void multiple(@TempDir File data) throws IOException {
+        // Reference value
+        final int valueSize = 1024 * 1024;
+        final int keyCount = 10;
+        final int overwrites = 10;
+
+        final Collection<ByteBuffer> keys = new ArrayList<>(keyCount);
+        for (int i = 0; i < keyCount; i++) {
+            keys.add(randomKey());
+        }
+
+        // Overwrite keys multiple times with intermediate compactions
+        try (DAO dao = DAOFactory.create(data)) {
+            for (int round = 0; round < overwrites; round++) {
+                // New version
+                final ByteBuffer value = randomBuffer(valueSize);
+
+                // Overwrite
+                for (final ByteBuffer key : keys) {
+                    dao.upsert(key, join(key, value));
+                }
+
+                // Compact
+                dao.compact();
+
+                // Check the contents
+                for (final ByteBuffer key : keys) {
+                    assertEquals(join(key, value), dao.get(key));
+                }
+            }
+        }
+
+        // Check store size
+        final long size = Files.directorySize(data);
+        final long minSize = keyCount * (KEY_LENGTH + KEY_LENGTH + valueSize);
+
+        // Heuristic
+        assertTrue(size > minSize);
+        assertTrue(size < 2 * minSize);
+    }
+
+    @Test
     void clear(@TempDir File data) throws IOException {
         // Reference value
         final int valueSize = 1024 * 1024;
